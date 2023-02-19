@@ -91,21 +91,19 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 			throws AuthenticationException {
 		prepareTimingAttackProtection();
 		try {
+			// 我们会编写一个实现类实现userDetailsService.loadUserByUsername,其中会去数据库中获取当前username的信息，并填充到UserDetails中返回
 			UserDetails loadedUser = this.getUserDetailsService().loadUserByUsername(username);
 			if (loadedUser == null) {
 				throw new InternalAuthenticationServiceException(
 						"UserDetailsService returned null, which is an interface contract violation");
 			}
 			return loadedUser;
-		}
-		catch (UsernameNotFoundException ex) {
+		} catch (UsernameNotFoundException ex) {
 			mitigateAgainstTimingAttack(authentication);
 			throw ex;
-		}
-		catch (InternalAuthenticationServiceException ex) {
+		} catch (InternalAuthenticationServiceException ex) {
 			throw ex;
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			throw new InternalAuthenticationServiceException(ex.getMessage(), ex);
 		}
 	}
@@ -140,8 +138,9 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 	 * Sets the PasswordEncoder instance to be used to encode and validate passwords. If
 	 * not set, the password will be compared using
 	 * {@link PasswordEncoderFactories#createDelegatingPasswordEncoder()}
+	 *
 	 * @param passwordEncoder must be an instance of one of the {@code PasswordEncoder}
-	 * types.
+	 *                        types.
 	 */
 	public void setPasswordEncoder(PasswordEncoder passwordEncoder) {
 		Assert.notNull(passwordEncoder, "passwordEncoder cannot be null");

@@ -46,7 +46,6 @@ import org.springframework.util.StringUtils;
  * {@link #MODE_GLOBAL} is definitely inappropriate for server use).
  *
  * @author Ben Alex
- *
  */
 public class SecurityContextHolder {
 
@@ -102,8 +101,7 @@ public class SecurityContextHolder {
 			Class<?> clazz = Class.forName(strategyName);
 			Constructor<?> customStrategy = clazz.getConstructor();
 			strategy = (SecurityContextHolderStrategy) customStrategy.newInstance();
-		}
-		catch (Exception ex) {
+		} catch (Exception ex) {
 			ReflectionUtils.handleReflectionException(ex);
 		}
 	}
@@ -117,6 +115,7 @@ public class SecurityContextHolder {
 
 	/**
 	 * Obtain the current <code>SecurityContext</code>.
+	 *
 	 * @return the security context (never <code>null</code>)
 	 */
 	public static SecurityContext getContext() {
@@ -126,6 +125,7 @@ public class SecurityContextHolder {
 	/**
 	 * Primarily for troubleshooting purposes, this method shows how many times the class
 	 * has re-initialized its <code>SecurityContextHolderStrategy</code>.
+	 *
 	 * @return the count (should be one unless you've called
 	 * {@link #setStrategyName(String)} or
 	 * {@link #setContextHolderStrategy(SecurityContextHolderStrategy)} to switch to an
@@ -137,6 +137,7 @@ public class SecurityContextHolder {
 
 	/**
 	 * Associates a new <code>SecurityContext</code> with the current thread of execution.
+	 *
 	 * @param context the new <code>SecurityContext</code> (may not be <code>null</code>)
 	 */
 	public static void setContext(SecurityContext context) {
@@ -147,8 +148,9 @@ public class SecurityContextHolder {
 	 * Changes the preferred strategy. Do <em>NOT</em> call this method more than once for
 	 * a given JVM, as it will re-initialize the strategy and adversely affect any
 	 * existing threads using the old strategy.
+	 *
 	 * @param strategyName the fully qualified class name of the strategy that should be
-	 * used.
+	 *                     used.
 	 */
 	public static void setStrategyName(String strategyName) {
 		SecurityContextHolder.strategyName = strategyName;
@@ -157,29 +159,30 @@ public class SecurityContextHolder {
 
 	/**
 	 * Use this {@link SecurityContextHolderStrategy}.
-	 *
+	 * <p>
 	 * Call either {@link #setStrategyName(String)} or this method, but not both.
-	 *
+	 * <p>
 	 * This method is not thread safe. Changing the strategy while requests are in-flight
 	 * may cause race conditions.
-	 *
+	 * <p>
 	 * {@link SecurityContextHolder} maintains a static reference to the provided
 	 * {@link SecurityContextHolderStrategy}. This means that the strategy and its members
 	 * will not be garbage collected until you remove your strategy.
-	 *
+	 * <p>
 	 * To ensure garbage collection, remember the original strategy like so:
 	 *
 	 * <pre>
 	 *     SecurityContextHolderStrategy original = SecurityContextHolder.getContextHolderStrategy();
 	 *     SecurityContextHolder.setContextHolderStrategy(myStrategy);
 	 * </pre>
-	 *
+	 * <p>
 	 * And then when you are ready for {@code myStrategy} to be garbage collected you can
 	 * do:
 	 *
 	 * <pre>
 	 *     SecurityContextHolder.setContextHolderStrategy(original);
 	 * </pre>
+	 *
 	 * @param strategy the {@link SecurityContextHolderStrategy} to use
 	 * @since 5.6
 	 */
@@ -192,6 +195,7 @@ public class SecurityContextHolder {
 
 	/**
 	 * Allows retrieval of the context strategy. See SEC-1188.
+	 *
 	 * @return the configured strategy for storing the security context.
 	 */
 	public static SecurityContextHolderStrategy getContextHolderStrategy() {

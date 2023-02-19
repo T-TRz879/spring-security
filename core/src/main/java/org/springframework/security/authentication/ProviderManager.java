@@ -57,7 +57,7 @@ import org.springframework.util.CollectionUtils;
  * The exception to this process is when a provider throws an
  * {@link AccountStatusException}, in which case no further providers in the list will be
  * queried.
- *
+ * <p>
  * Post-authentication, the credentials will be cleared from the returned
  * {@code Authentication} object, if it implements the {@link CredentialsContainer}
  * interface. This behaviour can be controlled by modifying the
@@ -103,6 +103,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 	/**
 	 * Construct a {@link ProviderManager} using the given {@link AuthenticationProvider}s
+	 *
 	 * @param providers the {@link AuthenticationProvider}s to use
 	 */
 	public ProviderManager(AuthenticationProvider... providers) {
@@ -111,6 +112,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 	/**
 	 * Construct a {@link ProviderManager} using the given {@link AuthenticationProvider}s
+	 *
 	 * @param providers the {@link AuthenticationProvider}s to use
 	 */
 	public ProviderManager(List<AuthenticationProvider> providers) {
@@ -119,8 +121,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 	/**
 	 * Construct a {@link ProviderManager} using the provided parameters
+	 *
 	 * @param providers the {@link AuthenticationProvider}s to use
-	 * @param parent a parent {@link AuthenticationManager} to fall back to
+	 * @param parent    a parent {@link AuthenticationManager} to fall back to
 	 */
 	public ProviderManager(List<AuthenticationProvider> providers, AuthenticationManager parent) {
 		Assert.notNull(providers, "providers list cannot be null");
@@ -157,6 +160,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 	 * subsequent <code>AuthenticationProvider</code>s will be tried. If authentication
 	 * was not successful by any supporting <code>AuthenticationProvider</code> the last
 	 * thrown <code>AuthenticationException</code> will be rethrown.
+	 *
 	 * @param authentication the authentication request object.
 	 * @return a fully authenticated object including credentials.
 	 * @throws AuthenticationException if authentication fails.
@@ -172,6 +176,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		int size = this.providers.size();
 		for (AuthenticationProvider provider : getProviders()) {
 			if (!provider.supports(toTest)) {
+				// 查看authentication是否符合当前的provider
 				continue;
 			}
 			if (logger.isTraceEnabled()) {
@@ -179,35 +184,33 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 						provider.getClass().getSimpleName(), ++currentPosition, size));
 			}
 			try {
+				// 调用provider的认证方法
 				result = provider.authenticate(authentication);
 				if (result != null) {
 					copyDetails(authentication, result);
 					break;
 				}
-			}
-			catch (AccountStatusException | InternalAuthenticationServiceException ex) {
+			} catch (AccountStatusException | InternalAuthenticationServiceException ex) {
 				prepareException(ex, authentication);
 				// SEC-546: Avoid polling additional providers if auth failure is due to
 				// invalid account status
 				throw ex;
-			}
-			catch (AuthenticationException ex) {
+			} catch (AuthenticationException ex) {
 				lastException = ex;
 			}
 		}
+		// 配置父认证器的时 且 providers中没有一个匹配 才会启用
 		if (result == null && this.parent != null) {
 			// Allow the parent to try.
 			try {
 				parentResult = this.parent.authenticate(authentication);
 				result = parentResult;
-			}
-			catch (ProviderNotFoundException ex) {
+			} catch (ProviderNotFoundException ex) {
 				// ignore as we will throw below if no other exception occurred prior to
 				// calling parent and the parent
 				// may throw ProviderNotFound even though a provider in the child already
 				// handled the request
-			}
-			catch (AuthenticationException ex) {
+			} catch (AuthenticationException ex) {
 				parentException = ex;
 				lastException = ex;
 			}
@@ -232,7 +235,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		// Parent was null, or didn't authenticate (or throw an exception).
 		if (lastException == null) {
 			lastException = new ProviderNotFoundException(this.messages.getMessage("ProviderManager.providerNotFound",
-					new Object[] { toTest.getName() }, "No AuthenticationProvider found for {0}"));
+					new Object[]{toTest.getName()}, "No AuthenticationProvider found for {0}"));
 		}
 		// If the parent AuthenticationManager was attempted and failed then it will
 		// publish an AbstractAuthenticationFailureEvent
@@ -252,8 +255,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 	/**
 	 * Copies the authentication details from a source Authentication object to a
 	 * destination one, provided the latter does not already have one set.
+	 *
 	 * @param source source authentication
-	 * @param dest the destination authentication object
+	 * @param dest   the destination authentication object
 	 */
 	private void copyDetails(Authentication source, Authentication dest) {
 		if ((dest instanceof AbstractAuthenticationToken) && (dest.getDetails() == null)) {
@@ -281,8 +285,9 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 	 * {@code CredentialsContainer} interface will have its
 	 * {@link CredentialsContainer#eraseCredentials() eraseCredentials} method called
 	 * before it is returned from the {@code authenticate()} method.
+	 *
 	 * @param eraseSecretData set to {@literal false} to retain the credentials data in
-	 * memory. Defaults to {@literal true}.
+	 *                        memory. Defaults to {@literal true}.
 	 */
 	public void setEraseCredentialsAfterAuthentication(boolean eraseSecretData) {
 		this.eraseCredentialsAfterAuthentication = eraseSecretData;

@@ -5,7 +5,7 @@ plugins {
 	id 'com.apollographql.apollo' version '2.4.5'
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
 	gradlePluginPortal()
@@ -119,3 +119,4 @@ tasks.named('test', Test).configure {
 			'--add-opens', 'java.base/java.util=ALL-UNNAMED'
 	)
 }
+targetCompatibility = JavaVersion.VERSION_11
