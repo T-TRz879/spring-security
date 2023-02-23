@@ -73,6 +73,7 @@ public final class RequestMatcherDelegatingAuthorizationManager implements Autho
 
 			RequestMatcher matcher = mapping.getRequestMatcher();
 			MatchResult matchResult = matcher.matcher(request);
+			// 去匹配每个规则
 			if (matchResult.isMatch()) {
 				AuthorizationManager<RequestAuthorizationContext> manager = mapping.getEntry();
 				if (this.logger.isTraceEnabled()) {

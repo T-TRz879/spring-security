@@ -26,8 +26,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.util.Assert;
 
 /**
- * An {@link AuthorizationManager} that determines if the current user is authorized by
- * evaluating if the {@link Authentication} contains a specified authority.
+ * An {@link AuthorizationManager} that determines if the current user is authorized by evaluating if the
+ * {@link Authentication} contains a specified authority.
  *
  * @param <T> the type of object being authorized.
  * @author Evgeniy Cheban
@@ -44,10 +44,10 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided
-	 * authority.
+	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided authority.
+	 *
 	 * @param role the authority to check for prefixed with "ROLE_"
-	 * @param <T> the type of object being authorized
+	 * @param <T>  the type of object being authorized
 	 * @return the new instance
 	 */
 	public static <T> AuthorityAuthorizationManager<T> hasRole(String role) {
@@ -56,10 +56,10 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided
-	 * authority.
+	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided authority.
+	 *
 	 * @param authority the authority to check for
-	 * @param <T> the type of object being authorized
+	 * @param <T>       the type of object being authorized
 	 * @return the new instance
 	 */
 	public static <T> AuthorityAuthorizationManager<T> hasAuthority(String authority) {
@@ -68,10 +68,10 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided
-	 * authorities.
+	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided authorities.
+	 *
 	 * @param roles the authorities to check for prefixed with "ROLE_"
-	 * @param <T> the type of object being authorized
+	 * @param <T>   the type of object being authorized
 	 * @return the new instance
 	 */
 	public static <T> AuthorityAuthorizationManager<T> hasAnyRole(String... roles) {
@@ -79,11 +79,11 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided
-	 * authorities.
+	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided authorities.
+	 *
 	 * @param rolePrefix the role prefix for <code>roles</code>
-	 * @param roles the authorities to check for prefixed with <code>rolePrefix</code>
-	 * @param <T> the type of object being authorized
+	 * @param roles      the authorities to check for prefixed with <code>rolePrefix</code>
+	 * @param <T>        the type of object being authorized
 	 * @return the new instance
 	 */
 	public static <T> AuthorityAuthorizationManager<T> hasAnyRole(String rolePrefix, String[] roles) {
@@ -94,10 +94,10 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided
-	 * authorities.
+	 * Creates an instance of {@link AuthorityAuthorizationManager} with the provided authorities.
+	 *
 	 * @param authorities the authorities to check for
-	 * @param <T> the type of object being authorized
+	 * @param <T>         the type of object being authorized
 	 * @return the new instance
 	 */
 	public static <T> AuthorityAuthorizationManager<T> hasAnyAuthority(String... authorities) {
@@ -115,14 +115,16 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	/**
-	 * Determines if the current user is authorized by evaluating if the
-	 * {@link Authentication} contains a specified authority.
+	 * Determines if the current user is authorized by evaluating if the {@link Authentication} contains a specified
+	 * authority.
+	 *
 	 * @param authentication the {@link Supplier} of the {@link Authentication} to check
-	 * @param object the {@link T} object to check
+	 * @param object         the {@link T} object to check
 	 * @return an {@link AuthorizationDecision}
 	 */
 	@Override
 	public AuthorizationDecision check(Supplier<Authentication> authentication, T object) {
+		// true-有权限 false-无权限
 		boolean granted = isGranted(authentication.get());
 		return new AuthorityAuthorizationDecision(granted, this.authorities);
 	}
@@ -132,6 +134,7 @@ public final class AuthorityAuthorizationManager<T> implements AuthorizationMana
 	}
 
 	private boolean isAuthorized(Authentication authentication) {
+		// 校验用户是否有authorities中的权限
 		Set<String> authorities = AuthorityUtils.authorityListToSet(this.authorities);
 		for (GrantedAuthority grantedAuthority : authentication.getAuthorities()) {
 			if (authorities.contains(grantedAuthority.getAuthority())) {

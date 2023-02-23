@@ -88,6 +88,7 @@ public class AuthorizationFilter extends GenericFilterBean {
 		String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
 		request.setAttribute(alreadyFilteredAttributeName, Boolean.TRUE);
 		try {
+			// 交给权限校验代理器完成
 			AuthorizationDecision decision = this.authorizationManager.check(this::getAuthentication, request);
 			this.eventPublisher.publishAuthorizationEvent(this::getAuthentication, request, decision);
 			if (decision != null && !decision.isGranted()) {
